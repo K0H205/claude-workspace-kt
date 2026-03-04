@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package task;
+
+option java_multiple_files = true;
+option java_package = "com.example.cleanarchitecture.grpc.generated";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// タスク管理 gRPC サービス
+service TaskService {
+  // タスクを作成
+  rpc CreateTask (CreateTaskRequest) returns (TaskResponse);
+  // タスクを取得
+  rpc GetTask (GetTaskRequest) returns (TaskResponse);
+  // タスク一覧を取得
+  rpc ListTasks (ListTasksRequest) returns (ListTasksResponse);
+  // タスクを完了にする
+  rpc CompleteTask (CompleteTaskRequest) returns (TaskResponse);
+  // タスクを削除
+  rpc DeleteTask (DeleteTaskRequest) returns (google.protobuf.Empty);
+}
+
+enum Priority {
+  PRIORITY_UNSPECIFIED = 0;
+  PRIORITY_LOW = 1;
+  PRIORITY_MEDIUM = 2;
+  PRIORITY_HIGH = 3;
+}
+
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  STATUS_PENDING = 1;
+  STATUS_IN_PROGRESS = 2;
+  STATUS_COMPLETED = 3;
+}
+
+message CreateTaskRequest {
+  string title = 1;
+  string description = 2;
+  Priority priority = 3;
+}
+
+message GetTaskRequest {
+  int64 id = 1;
+}
+
+message ListTasksRequest {
+  // 空の場合は全件取得、指定した場合はそのステータスでフィルタ
+  optional Status status = 1;
+}
+
+message CompleteTaskRequest {
+  int64 id = 1;
+}
+
+message DeleteTaskRequest {
+  int64 id = 1;
+}
+
+message TaskResponse {
+  int64 id = 1;
+  string title = 2;
+  string description = 3;
+  Status status = 4;
+  Priority priority = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message ListTasksResponse {
+  repeated TaskResponse tasks = 1;
+}
